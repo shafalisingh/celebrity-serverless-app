@@ -1,0 +1,291 @@
+swagger: "2.0"
+info:
+  version: "0.0.1"
+  title: Celebrity Collection App
+  description: Bollywood Showbiz,
+# during dev, should point to your local machine
+host: localhost:3000
+# basePath prefixes all resource paths
+basePath: /
+#
+schemes:
+  # tip: remove http to make production-grade
+  - http
+  - https
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+paths:
+  /celebrity:
+    # our controller name
+    x-swagger-router-controller: celebrity
+    get:
+      operationId: getAll
+      description: get the celebrity list
+      # define the type of response for Success "200" and Error
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GetCelebrityListResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: 200
+        uri: arn:aws:apigateway:YOUR_AWS_REGION:lambda:path/2015-03-31/functions/arn:aws:lambda:YOUR_AWS_REGION:YOUR_ACCOUNT_ID:function:${stageVariables.ServerlessExpressLambdaFunctionName}/invocations
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        type: aws_proxy
+    post:
+      operationId: save
+      description: add a new celebrity to the list
+      # movie info to be stored
+      parameters:
+        - name: name
+          description: Celebrity properties
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Celebrity"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GeneralResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: 200
+        uri: arn:aws:apigateway:YOUR_AWS_REGION:lambda:path/2015-03-31/functions/arn:aws:lambda:YOUR_AWS_REGION:YOUR_ACCOUNT_ID:function:${stageVariables.ServerlessExpressLambdaFunctionName}/invocations
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        type: aws_proxy
+    options:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        200:
+          description: 200 response
+          schema:
+            $ref: "#/definitions/Empty"
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+            Access-Control-Allow-Methods:
+              type: string
+            Access-Control-Allow-Headers:
+              type: string
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: 200
+            responseParameters:
+              method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
+              method.response.header.Access-Control-Allow-Origin: "'https://example.com'"
+        passthroughBehavior: when_no_match
+        requestTemplates:
+          application/json: "{\"statusCode\": 200}"
+        type: mock
+
+  /celebrity/{id}:
+     # our controller name
+    x-swagger-router-controller: celebrity
+    get:
+      operationId: getOne
+      description: get a movie
+      # define the type of response for Success "200" and Error
+      parameters:
+        - name: id
+          type: string
+          in: path
+          required: true
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GetCelebrityResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+      x-amazon-apigateway-integration:
+       responses:
+         default:
+           statusCode: 200
+       uri: arn:aws:apigateway:YOUR_AWS_REGION:lambda:path/2015-03-31/functions/arn:aws:lambda:YOUR_AWS_REGION:YOUR_ACCOUNT_ID:function:${stageVariables.ServerlessExpressLambdaFunctionName}/invocations
+       httpMethod: POST
+       passthroughBehavior: when_no_match
+       type: aws_proxy
+    put:
+      operationId: update
+      description: update a celebrity
+      # define the parameters
+      parameters:
+        - name: id
+          description: Celebrity id
+          type: string
+          in: path
+          required: true
+        - name: name
+          description: Celebrity properties
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Celebrity"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GeneralResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: 200
+        uri: arn:aws:apigateway:YOUR_AWS_REGION:lambda:path/2015-03-31/functions/arn:aws:lambda:YOUR_AWS_REGION:YOUR_ACCOUNT_ID:function:${stageVariables.ServerlessExpressLambdaFunctionName}/invocations
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        type: aws_proxy
+
+    delete:
+      operationId: delCeleb
+      description: delete a celebrity
+      # define the parameters
+      parameters:
+        - name: id
+          description: celebrity id
+          type: string
+          in: path
+          required: true
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GeneralResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: 200
+        uri: arn:aws:apigateway:YOUR_AWS_REGION:lambda:path/2015-03-31/functions/arn:aws:lambda:YOUR_AWS_REGION:YOUR_ACCOUNT_ID:function:${stageVariables.ServerlessExpressLambdaFunctionName}/invocations
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        type: aws_proxy
+        options:
+          consumes:
+          - application/json
+          produces:
+          - application/json
+          responses:
+            200:
+              description: 200 response
+              schema:
+                $ref: "#/definitions/Empty"
+              headers:
+                Access-Control-Allow-Origin:
+                  type: string
+                Access-Control-Allow-Methods:
+                  type: string
+                Access-Control-Allow-Headers:
+                  type: string
+          x-amazon-apigateway-integration:
+            responses:
+              default:
+                statusCode: 200
+                responseParameters:
+                  method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
+                  method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
+                  method.response.header.Access-Control-Allow-Origin: "'https://example.com'"
+            passthroughBehavior: when_no_match
+            requestTemplates:
+              application/json: "{\"statusCode\": 200}"
+            type: mock
+  /swagger:
+      x-swagger-pipe: swagger_raw
+definitions:
+    GetCelebrityResponse:
+      required:
+        - id
+        - name
+        - movie
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        movie:
+          type: string
+    Celebrity:
+      type: object
+      properties:
+        name:
+          type: string
+          description: task object name
+        movie:
+          type: string
+          description: task object name
+        id:
+          type: string
+          description: task object name
+      required:
+        - name
+        - movie
+        - id
+    GetCelebrityListResponse:
+      required:
+        - celebrities
+      properties:
+        # The array of movies
+        celebrities:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+              movie:
+                type: string
+    ErrorResponse:
+      required:
+        - message
+      properties:
+        message:
+          type: string
+
+    GeneralResponse:
+      type: object
+      properties:
+        success:
+          type: number
+          description: returns 1 if successful
+        description:
+          type: string
+          description: a short comment 
+      required:
+        - success
+        - description
+      
+    Empty:
+      type: object
